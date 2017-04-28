@@ -1,65 +1,49 @@
 package com.severett.cashregister;
 
 import com.severett.cashregister.exception.OutOfMoneyException;
-import com.severett.cashregister.exception.ValidationFailedException;
+import com.severett.cashregister.factory.IMoneyCollectionFactory;
 import com.severett.cashregister.money.MoneyCollection;
-import com.severett.cashregister.money.MoneyTypes;
-import java.util.Collection;
+import com.severett.cashregister.money.MoneyType;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class Register {
+public final class Register {
     
+    private final IMoneyCollectionFactory moneyCollectionFactory;
     private MoneyCollection moneyReserves;
     
-    public Register(int pennies, int nickels, int dimes, int quarters, int dollarBills,
-            int fiveDollarBills, int tenDollarBills, int twentyDollarBills) {
-        this(new MoneyCollection(pennies, nickels, dimes, quarters, dollarBills, fiveDollarBills, tenDollarBills, twentyDollarBills));
+    public Register(IMoneyCollectionFactory moneyCollectionFactory) {
+        this.moneyCollectionFactory = moneyCollectionFactory;
+        resetMoneyReserves();
     }
     
-    public Register(MoneyCollection moneyReserves) {
-        this.moneyReserves = moneyReserves;
+    public void resetMoneyReserves() {
+        moneyReserves = moneyCollectionFactory.generateMoneyCollection();
     }
     
-    public MoneyCollection getMoneyReserves() {
-        return new MoneyCollection(this.moneyReserves);
-    }
-    
-    public MoneyCollection makeChange(int billAmt, int coinAmt) throws OutOfMoneyException {
-        MoneyCollection change = new MoneyCollection(0, 0, 0, 0, 0, 0, 0, 0);
-        Map<MoneyTypes, Integer> moneyAmt = Stream.of(
-                getMoneyList(MoneyTypes.getCoins(), coinAmt),
-                getMoneyList(MoneyTypes.getBills(), billAmt)
-            ).map(Map::entrySet)
-            .flatMap(Collection::stream)
-            .collect(
-                Collectors.toMap(
-                    Map.Entry::getKey,
-                    Map.Entry::getValue,
-                    Integer::max
-                )
-            );
-        moneyAmt.forEach((moneyType, amt)->{
-            change.setValue(moneyType, amt);
-            moneyReserves.setValue(moneyType, moneyReserves.getValue(moneyType) - amt);
+    public MoneyCollection makeChange(BigDecimal amt) throws OutOfMoneyException {
+        MoneyCollection change = moneyCollectionFactory.generateMoneyCollection(0, 0);
+        Map<MoneyType, Integer> moneyAmt = getMoneyList(moneyReserves.getMoneyTypes(), amt);
+        moneyAmt.forEach((moneyType, retAmt)->{
+            change.setMoneyTypeAmt(moneyType, retAmt);
+            moneyReserves.setMoneyTypeAmt(moneyType, moneyReserves.getMoneyTypeAmt(moneyType) - retAmt);
         });
         return change;
     }
     
-    private Map<MoneyTypes, Integer> getMoneyList(List<MoneyTypes> moneyTypes, int amt) throws OutOfMoneyException {
-        Map<MoneyTypes, Integer> registerAmtsUsed = new HashMap<>();
-        for (int i = moneyTypes.size() - 1; i >= 0 && amt >= 0; i--) {
-            MoneyTypes moneyType = moneyTypes.get(i);
-            int registerAmt = moneyReserves.getValue(moneyType);
-            int currTypeUsed = amt / moneyType.getAsInt();
+    private Map<MoneyType, Integer> getMoneyList(List<MoneyType> moneyTypes, BigDecimal amt) throws OutOfMoneyException {
+        Map<MoneyType, Integer> registerAmtsUsed = new HashMap<>();
+        for (int i = moneyTypes.size() - 1; i >= 0 && (amt.compareTo(BigDecimal.ZERO) >= 0); i--) {
+            MoneyType moneyType = moneyTypes.get(i);
+            int registerAmt = moneyReserves.getMoneyTypeAmt(moneyType);
+            int currTypeUsed = amt.divideToIntegralValue(moneyType.getValue()).intValue();
             int registerAmtUsed = currTypeUsed <= registerAmt ? currTypeUsed : registerAmt;
             registerAmtsUsed.put(moneyType, registerAmtUsed);
-            amt -= (registerAmtUsed * moneyType.getAsInt());
+            amt = amt.subtract(new BigDecimal(registerAmtUsed).multiply(moneyType.getValue()));
         }
-        if (amt > 0) {
+        if ((amt.compareTo(BigDecimal.ZERO)) > 0) {
             throw new OutOfMoneyException();
         }
         return registerAmtsUsed;
