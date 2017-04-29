@@ -35,16 +35,17 @@ public final class Register {
     
     private Map<MoneyType, Integer> getMoneyList(List<MoneyType> moneyTypes, BigDecimal amt) throws OutOfMoneyException {
         Map<MoneyType, Integer> registerAmtsUsed = new HashMap<>();
-        for (int i = moneyTypes.size() - 1; i >= 0 && (amt.compareTo(BigDecimal.ZERO) >= 0); i--) {
+        BigDecimal resultingAmt = new BigDecimal(amt.toString());
+        for (int i = moneyTypes.size() - 1; i >= 0 && (resultingAmt.compareTo(BigDecimal.ZERO) >= 0); i--) {
             MoneyType moneyType = moneyTypes.get(i);
             int registerAmt = moneyReserves.getMoneyTypeAmt(moneyType);
-            int currTypeUsed = amt.divideToIntegralValue(moneyType.getValue()).intValue();
+            int currTypeUsed = resultingAmt.divideToIntegralValue(moneyType.getValue()).intValue();
             int registerAmtUsed = currTypeUsed <= registerAmt ? currTypeUsed : registerAmt;
             registerAmtsUsed.put(moneyType, registerAmtUsed);
-            amt = amt.subtract(new BigDecimal(registerAmtUsed).multiply(moneyType.getValue()));
+            resultingAmt = resultingAmt.subtract(new BigDecimal(registerAmtUsed).multiply(moneyType.getValue()));
         }
-        if ((amt.compareTo(BigDecimal.ZERO)) > 0) {
-            throw new OutOfMoneyException();
+        if ((resultingAmt.compareTo(BigDecimal.ZERO)) > 0) {
+            throw new OutOfMoneyException(amt, resultingAmt);
         }
         return registerAmtsUsed;
     }

@@ -4,22 +4,17 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 final public class MoneyCollection {
     
     private final Map<MoneyType, Integer> moneyTypeAmts;
     
-    public MoneyCollection(List<MoneyType> moneyTypesList) {
-        this(moneyTypesList, 0, 0);
-    }
-    
-    private MoneyCollection(List<MoneyType> moneyTypesList, final int billAmt, final int coinAmt) {
-        this.moneyTypeAmts = new LinkedHashMap<>(moneyTypesList.stream()
-            .collect(
-                Collectors.toMap(
-                    e->e, e-> e.getPhysicalType().equals(MoneyType.PhysicalType.BILL) ? billAmt : coinAmt
-                )
+    public MoneyCollection(List<MoneyType> moneyTypesList, final int billAmt, final int coinAmt) {
+        this.moneyTypeAmts = new LinkedHashMap<>();
+        moneyTypesList.forEach(
+            mt -> moneyTypeAmts.put(
+                mt, 
+                mt.getPhysicalType().equals(MoneyType.PhysicalType.BILL) ? billAmt : coinAmt
             )
         );
     }
