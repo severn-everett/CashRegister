@@ -12,7 +12,7 @@ public class MoneyCollectionFactoryTest {
     @Test
     public void testUSMoneyCollection() {
         try {
-            MoneyCollectionFactory usMCF = new MoneyCollectionFactory(MoneyCollectionFactory.USD_TYPE);
+            MoneyCollectionFactory usMCF = new MoneyCollectionFactory("USD");
             List<MoneyType> moneyTypes = usMCF.generateMoneyCollection().getMoneyTypes();
             Assert.assertEquals(4, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.COIN).collect(Collectors.toList()).size());
             Assert.assertEquals(4, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.BILL).collect(Collectors.toList()).size());
@@ -24,7 +24,7 @@ public class MoneyCollectionFactoryTest {
     @Test
     public void testCanadianMoneyCollection() {
         try {
-            MoneyCollectionFactory canadianMCF = new MoneyCollectionFactory(MoneyCollectionFactory.CAD_TYPE);
+            MoneyCollectionFactory canadianMCF = new MoneyCollectionFactory("CAD");
             List<MoneyType> moneyTypes = canadianMCF.generateMoneyCollection().getMoneyTypes();
             Assert.assertEquals(6, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.COIN).collect(Collectors.toList()).size());
             Assert.assertEquals(3, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.BILL).collect(Collectors.toList()).size());
@@ -38,7 +38,7 @@ public class MoneyCollectionFactoryTest {
         int defaultBillAmt = 20;
         int defaultCoinAmt = 50;
         try {
-            MoneyCollectionFactory usMCF = new MoneyCollectionFactory(MoneyCollectionFactory.USD_TYPE);
+            MoneyCollectionFactory usMCF = new MoneyCollectionFactory("USD");
             MoneyCollection moneyCollection = usMCF.generateMoneyCollection(defaultBillAmt, defaultCoinAmt);
             List<MoneyType> moneyTypes = moneyCollection.getMoneyTypes();
             Assert.assertFalse(moneyTypes.stream().anyMatch(

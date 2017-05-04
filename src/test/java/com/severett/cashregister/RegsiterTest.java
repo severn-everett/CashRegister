@@ -1,7 +1,7 @@
 package com.severett.cashregister;
 
 import com.severett.cashregister.exception.OutOfMoneyException;
-import com.severett.cashregister.factory.MockMoneyCollectionFactory;
+import com.severett.cashregister.mocks.MockMoneyCollectionFactory;
 import com.severett.cashregister.money.MoneyCollection;
 import java.math.BigDecimal;
 import java.util.Arrays;

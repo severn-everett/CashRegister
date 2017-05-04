@@ -1,0 +1,5 @@
+---
+collectionType: CAD
+defaultAmt:
+    - type: BILL
+      amt: 150

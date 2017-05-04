@@ -1,5 +1,7 @@
-package com.severett.cashregister.factory;
+package com.severett.cashregister.mocks;
 
+import com.severett.cashregister.factory.AMoneyCollectionBuilder;
+import com.severett.cashregister.factory.IMoneyCollectionFactory;
 import com.severett.cashregister.money.MoneyCollection;
 
 public class MockMoneyCollectionFactory implements IMoneyCollectionFactory {

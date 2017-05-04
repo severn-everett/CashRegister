@@ -1,0 +1,6 @@
+---
+defaultAmt:
+    - type: COIN
+      amt: 200
+    - type: BILL
+      amt: 150

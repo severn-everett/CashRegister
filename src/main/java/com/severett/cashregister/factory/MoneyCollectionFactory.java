@@ -7,9 +7,6 @@ import java.util.Optional;
 
 public class MoneyCollectionFactory implements IMoneyCollectionFactory {
     
-    public static final String USD_TYPE = "USD";
-    public static final String CAD_TYPE = "CAD";
-    
     private static final List<AMoneyCollectionBuilder> CURRENCY_TYPES_LIST = Arrays.asList(
         new CADMoneyCollectionBuilder(100, 100),
         new USDMoneyCollectionBuilder(100, 100)

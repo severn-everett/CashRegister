@@ -1,5 +1,6 @@
-package com.severett.cashregister.factory;
+package com.severett.cashregister.mocks;
 
+import com.severett.cashregister.factory.AMoneyCollectionBuilder;
 import com.severett.cashregister.money.MoneyType;
 import java.util.Arrays;
 import java.util.Collections;
