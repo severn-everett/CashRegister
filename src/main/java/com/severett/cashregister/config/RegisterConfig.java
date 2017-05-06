@@ -2,12 +2,12 @@ package com.severett.cashregister.config;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.severett.cashregister.exception.ConfigurationFailedException;
+import com.severett.cashregister.exception.ValidationFailedException;
 import com.severett.cashregister.money.MoneyType;
-import java.io.FileNotFoundException;
+import com.severett.cashregister.utils.Validator;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import javax.naming.ConfigurationException;
@@ -17,11 +17,16 @@ public final class RegisterConfig {
     private static final int DEFAULT_COIN_AMT = 100;
     private static final int DEFAULT_BILL_AMT = 100;
     
-    private final String collectionType;
-    private final int coinAmt;
-    private final int billAmt;
+    private String collectionType;
+    private int coinAmt;
+    private int billAmt;
     
     public RegisterConfig(String configFileName) throws ConfigurationFailedException {
+        readConfigFile(configFileName);
+        validateConfiguration();
+    }
+    
+    private void readConfigFile(String configFileName) throws ConfigurationFailedException {
         try (Reader r = new FileReader(configFileName)) {
             YamlReader reader = new YamlReader(r);
             Map configMap = (Map) reader.read();
@@ -46,10 +51,17 @@ public final class RegisterConfig {
             } else {
                 throw new ConfigurationFailedException(new ConfigurationException("Entry 'collectionType' is required"));
             }
-        } catch (IOException ioe) {
-            throw new ConfigurationFailedException(ioe);
-        } catch (NumberFormatException nfe) {
-            throw new ConfigurationFailedException(nfe);
+        } catch (IOException | NumberFormatException e) {
+            throw new ConfigurationFailedException(e);
+        }
+    }
+    
+    private void validateConfiguration() throws ConfigurationFailedException {
+        try {
+            Validator.requireTrue(()->coinAmt > 0, "Default coin amount must be greater than zero");
+            Validator.requireTrue(()->billAmt > 0, "Default bill amount must be greater than zero");
+        } catch (ValidationFailedException vfe) {
+            throw new ConfigurationFailedException(vfe);
         }
     }
     
