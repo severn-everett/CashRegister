@@ -48,6 +48,8 @@ public final class RegisterConfig {
             }
         } catch (IOException ioe) {
             throw new ConfigurationFailedException(ioe);
+        } catch (NumberFormatException nfe) {
+            throw new ConfigurationFailedException(nfe);
         }
     }
     

@@ -12,7 +12,7 @@ public class MoneyCollectionFactoryTest {
     @Test
     public void testUSMoneyCollection() {
         try {
-            MoneyCollectionFactory usMCF = new MoneyCollectionFactory("USD");
+            MoneyCollectionFactory usMCF = new MoneyCollectionFactory("USD", 100, 100);
             List<MoneyType> moneyTypes = usMCF.generateMoneyCollection().getMoneyTypes();
             Assert.assertEquals(4, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.COIN).collect(Collectors.toList()).size());
             Assert.assertEquals(4, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.BILL).collect(Collectors.toList()).size());
@@ -24,7 +24,7 @@ public class MoneyCollectionFactoryTest {
     @Test
     public void testCanadianMoneyCollection() {
         try {
-            MoneyCollectionFactory canadianMCF = new MoneyCollectionFactory("CAD");
+            MoneyCollectionFactory canadianMCF = new MoneyCollectionFactory("CAD", 100, 100);
             List<MoneyType> moneyTypes = canadianMCF.generateMoneyCollection().getMoneyTypes();
             Assert.assertEquals(6, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.COIN).collect(Collectors.toList()).size());
             Assert.assertEquals(3, moneyTypes.stream().filter(mt -> mt.getPhysicalType() == MoneyType.PhysicalType.BILL).collect(Collectors.toList()).size());
@@ -38,7 +38,7 @@ public class MoneyCollectionFactoryTest {
         int defaultBillAmt = 20;
         int defaultCoinAmt = 50;
         try {
-            MoneyCollectionFactory usMCF = new MoneyCollectionFactory("USD");
+            MoneyCollectionFactory usMCF = new MoneyCollectionFactory("USD", 100, 100);
             MoneyCollection moneyCollection = usMCF.generateMoneyCollection(defaultBillAmt, defaultCoinAmt);
             List<MoneyType> moneyTypes = moneyCollection.getMoneyTypes();
             Assert.assertFalse(moneyTypes.stream().anyMatch(
@@ -55,7 +55,7 @@ public class MoneyCollectionFactoryTest {
     @Test
     public void testInvalidMoneyCollection() {
         try {
-            MoneyCollectionFactory invalidMCF = new MoneyCollectionFactory("Monopoly Money");
+            MoneyCollectionFactory invalidMCF = new MoneyCollectionFactory("Monopoly Money", 100, 100);
             Assert.fail("No OutOfMoneyException raised!");
         } catch (ClassNotFoundException cnfe) {
             // Expected behavior

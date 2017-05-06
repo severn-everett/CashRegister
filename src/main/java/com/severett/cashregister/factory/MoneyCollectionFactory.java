@@ -2,21 +2,28 @@ package com.severett.cashregister.factory;
 
 import com.severett.cashregister.money.MoneyCollection;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.function.BiFunction;
 
 public class MoneyCollectionFactory implements IMoneyCollectionFactory {
     
-    private static final List<AMoneyCollectionBuilder> CURRENCY_TYPES_LIST = Arrays.asList(
-        new CADMoneyCollectionBuilder(100, 100),
-        new USDMoneyCollectionBuilder(100, 100)
-    );
+    private static final Map<String, BiFunction<Integer, Integer, AMoneyCollectionBuilder>> COLLECTION_BUILDER_MAP;
+    static {
+        COLLECTION_BUILDER_MAP = new HashMap<>();
+        COLLECTION_BUILDER_MAP.put("CAD", (dba,dca) -> new CADMoneyCollectionBuilder(dba, dca));
+        COLLECTION_BUILDER_MAP.put("USD", (dba,dca) -> new USDMoneyCollectionBuilder(dba, dca));
+    }
     
     private final AMoneyCollectionBuilder designatedCurrencyBuilder;
     
-    public MoneyCollectionFactory(String currencyType) throws ClassNotFoundException {
-        Optional<AMoneyCollectionBuilder> collectionBuilder = CURRENCY_TYPES_LIST.stream().filter(mcb -> mcb.getCollectionType().equals(currencyType)).findAny();
-        designatedCurrencyBuilder = collectionBuilder.orElseThrow(ClassNotFoundException::new);
+    public MoneyCollectionFactory(String currencyType, int defaultBillAmt, int defaultCoinAmt) throws ClassNotFoundException {
+        if (COLLECTION_BUILDER_MAP.containsKey(currencyType)) {
+            designatedCurrencyBuilder = COLLECTION_BUILDER_MAP.get(currencyType).apply(defaultBillAmt, defaultCoinAmt);
+        } else {
+            throw new ClassNotFoundException("Collection Type '" + currencyType + "' Not Found!");
+        }
     }
     
     @Override

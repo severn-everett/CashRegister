@@ -1,0 +1,7 @@
+---
+collectionType: USD
+defaultAmt:
+    - type: COIN
+      amt: 25.5
+    - type: BILL
+      amt: 150

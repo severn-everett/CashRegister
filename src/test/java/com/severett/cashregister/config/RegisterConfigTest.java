@@ -53,4 +53,14 @@ public class RegisterConfigTest {
             Assert.assertEquals("Entry 'collectionType' is required", cfe.getCausingException().getMessage());
         }
     }
+    
+    @Test
+    public void testBadAmtValue() {
+        try {
+            RegisterConfig registerConfig = new RegisterConfig("src/test/resources/badConfigs/badAmtValue.yml");
+            Assert.fail("No exception raised when a ConfigurationFailedException was expected!");
+        } catch (ConfigurationFailedException cfe) {
+            Assert.assertEquals(NumberFormatException.class.toString(), cfe.getCausingException().getClass().toString());
+        }
+    }
 }
