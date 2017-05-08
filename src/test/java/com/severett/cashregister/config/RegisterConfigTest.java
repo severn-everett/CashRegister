@@ -11,7 +11,7 @@ public class RegisterConfigTest {
     @Test
     public void testNormalRegisterConfig() {
         try {
-            RegisterConfig registerConfig = new RegisterConfig("src/test/resources/goodConfigs/normalConfig.yml");
+            RegisterConfig registerConfig = new RegisterConfig("src/test/resources/goodConfigs/normalUSDConfig.yml");
             Assert.assertEquals("USD", registerConfig.getCollectionType());
             Assert.assertEquals(200, registerConfig.getCoinAmt());
             Assert.assertEquals(150, registerConfig.getBillAmt());
